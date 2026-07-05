@@ -13,16 +13,23 @@ app = FastAPI(
 )
 
 
+DEFAULT_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "https://www.sincer.info",
+    "https://sincer.info",
+]
+
+
 def get_allowed_origins() -> list[str]:
     """
-    Build the CORS allowlist from local dev and production frontend URLs.
-    FRONTEND_URL should be the full Vercel URL, e.g. https://your-app.vercel.app
+    Build the CORS allowlist from defaults, FRONTEND_URL, and FRONTEND_URLS.
+    FRONTEND_URL should be the full production URL, e.g. https://your-app.vercel.app
     FRONTEND_URLS can provide additional comma-separated origins if needed.
     """
-    origins = ["http://localhost:3000"]
+    origins = list(DEFAULT_ALLOWED_ORIGINS)
 
     frontend_url = os.getenv("FRONTEND_URL", "").strip().rstrip("/")
-    if frontend_url and frontend_url != "*":
+    if frontend_url and frontend_url != "*" and frontend_url not in origins:
         origins.append(frontend_url)
 
     extra_origins = os.getenv("FRONTEND_URLS", "")
